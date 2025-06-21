@@ -23,7 +23,6 @@ if st.button('Mostrar gráfico de duración'):
         title='Duración de actividad por plataforma',
         labels={'duración': 'Años activos', 'platform': 'Plataforma'},
         color='duración',
-        color_continuous_scale='turbo'
-    )
+        color_continuous_scale='turbo')
 
     st.plotly_chart(fig, use_container_width=True)
