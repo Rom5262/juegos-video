@@ -4,7 +4,10 @@ import plotly.express as px
 
 st.header('🎮 Duración de actividad por plataforma de videojuegos')
 
-df = pd.read_csv('games.csv')  # asegúrate de que el archivo esté en la misma carpeta
+df = pd.read_csv('games.csv')  
+ruta_csv = os.path.join(os.path.dirname(__file__), 'games.csv')
+df = pd.read_csv(ruta_csv)
+
 
 df = df.dropna(subset=['platform', 'year_of_release'])
 
