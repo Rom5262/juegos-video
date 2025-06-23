@@ -6,14 +6,9 @@ st.set_page_config(page_title="Duración de plataformas", layout="wide")
 st.title("📊 Duración de plataformas en la industria de videojuegos")
 
 if st.button("Ver gráfico de plataformas", key="btn_duracion_platform"):
-
     df = pd.read_csv("games.csv")
-    df.columns = df.columns.str.strip()
+    df.columns = [col.lower() for col in df.columns]  
 
-    # 👇 Esta línea imprime las columnas tal como las ve Render
-    st.write("Columnas que encontró Render:", df.columns.tolist())
-
-    # Procesamiento de datos (solo continuará si la columna 'platform' existe)
     if 'platform' in df.columns and 'year_of_release' in df.columns:
         platform_active = df.groupby("platform")["year_of_release"].agg(["min", "max"])
         platform_active["year_activity"] = platform_active["max"] - platform_active["min"]
@@ -42,6 +37,6 @@ if st.button("Ver gráfico de plataformas", key="btn_duracion_platform"):
 
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.warning("⚠️ El archivo no contiene las columnas 'platform' o 'year_of_release'. Verifica el CSV.")
+        st.warning("El archivo no contiene las columnas necesarias: 'platform' y 'year_of_release'.")
 
 
