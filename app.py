@@ -39,4 +39,29 @@ if st.button("Ver gráfico de plataformas", key="btn_duracion_platform"):
     else:
         st.warning("El archivo no contiene las columnas necesarias: 'platform' y 'year_of_release'.")
 
+with st.expander("🔹 Plataformas activas por año"):
+    if st.button("Ver gráfico de plataformas activas"):
+        platforms_by_year = df.groupby('year_of_release')['platform'].nunique().reset_index()
+        platforms_by_year.columns = ['year', 'unique_platforms']
 
+        fig = px.line(
+            platforms_by_year,
+            x='year',
+            y='unique_platforms',
+            markers=True,
+            labels={
+                'year': 'Año de lanzamiento',
+                'unique_platforms': 'Número de plataformas activas'
+            },
+            title='Cantidad de plataformas activas por año',
+            color_discrete_sequence=['blue']
+        )
+
+        fig.update_layout(
+            xaxis_title='Año',
+            yaxis_title='Cantidad de plataformas',
+            xaxis=dict(dtick=1),
+            yaxis_range=[0, platforms_by_year['unique_platforms'].max() + 1]
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
