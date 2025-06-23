@@ -1,45 +1,37 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-import os
 
 
-st.header('🎮 Top 10 plataformas por ventas totales de videojuegos')
+st.title('Análisis de la duración de plataformas de videojuegos')
 
 
-ruta_csv = os.path.join(os.path.dirname(__file__), 'games.csv')
+df = pd.read_csv('games.csv')  
 
-try:
-    df = pd.read_csv(ruta_csv, encoding='utf-8')
-    st.write("Archivo CSV cargado correctamente.")
-    st.write("Columnas disponibles:", df.columns.tolist())
-except Exception as e:
-    st.error(f"No se pudo cargar el archivo CSV: {e}")
+platform_active = df.groupby('platform')['year_of_release'].agg(year_start='min', year_end='max')
+platform_active['year_activity'] = platform_active['year_end'] - platform_active['year_start']
+platform_durability = platform_active.sort_values(by='year_start').reset_index()
 
 
-grafico_button = st.button('Mostrar gráfico de ventas')
-
-if grafico_button:
-    st.write('Mostrando las 10 plataformas con más ventas totales')
-
-    total_sales_platform = df.groupby('platform')['total_sales'].sum().reset_index()
-    total_sales_platform = total_sales_platform.sort_values(by='total_sales', ascending=False)
-
-  
-    top_10 = total_sales_platform.head(10)
+if st.checkbox('Mostrar tabla de duraciones'):
+    st.dataframe(platform_durability)
 
 
-    fig = px.bar(
-        top_10,
-        x='platform',
-        y='total_sales',
-        title='Top 10 plataformas por ventas totales',
-        labels={'platform': 'Plataforma', 'total_sales': 'Ventas totales (millones)'},
-        color='total_sales',
-        color_continuous_scale='blues'
+if st.button('Visualizar duración de plataformas'):
+    st.write('Duración de cada plataforma en la industria del videojuego')
+    fig = px.line(
+        platform_durability,
+        x='year_start',
+        y='year_activity',
+        color='platform',
+        markers=True,
+        labels={
+            'year_start': 'Año de lanzamiento',
+            'year_activity': 'Años de actividad',
+            'platform': 'Plataforma'
+        },
+        title='Duración de plataformas en la industria'
     )
-
-   
+    fig.update_layout(xaxis_range=[1980, 2016], yaxis_range=[0, 20])
     st.plotly_chart(fig, use_container_width=True)
-
-
+    
