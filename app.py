@@ -39,6 +39,20 @@ if st.button("Ver gráfico de plataformas", key="btn_duracion_platform"):
     else:
         st.warning("El archivo no contiene las columnas necesarias: 'platform' y 'year_of_release'.")
 
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# Configurar la página
+st.set_page_config(layout="wide")
+st.title("🎮 Análisis de la industria de los videojuegos")
+
+# Cargar y preparar el DataFrame
+df = pd.read_csv("games.csv")
+df.columns = [col.lower() for col in df.columns]
+
+# 🔹 Gráfico: Plataformas activas por año
 with st.expander("🔹 Plataformas activas por año"):
     if st.button("Ver gráfico de plataformas activas"):
         platforms_by_year = df.groupby('year_of_release')['platform'].nunique().reset_index()
@@ -65,3 +79,5 @@ with st.expander("🔹 Plataformas activas por año"):
         )
 
         st.plotly_chart(fig, use_container_width=True)
+
+        
