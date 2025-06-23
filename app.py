@@ -1,34 +1,45 @@
-import streamlit as st
 import pandas as pd
 import plotly.express as px
+import streamlit as st
 import os
 
-st.header('🎮 Duración de actividad por plataforma de videojuegos')
+
+st.header('🎮 Top 10 plataformas por ventas totales de videojuegos')
+
 
 ruta_csv = os.path.join(os.path.dirname(__file__), 'games.csv')
-df = pd.read_csv(ruta_csv, encoding='utf-8')  
+
+try:
+    df = pd.read_csv(ruta_csv, encoding='utf-8')
+    st.write("Archivo CSV cargado correctamente.")
+    st.write("Columnas disponibles:", df.columns.tolist())
+except Exception as e:
+    st.error(f"No se pudo cargar el archivo CSV: {e}")
 
 
-df = df.dropna(subset=['platform', 'year_of_release'])
+grafico_button = st.button('Mostrar gráfico de ventas')
+
+if grafico_button:
+    st.write('Mostrando las 10 plataformas con más ventas totales')
+
+    total_sales_platform = df.groupby('platform')['total_sales'].sum().reset_index()
+    total_sales_platform = total_sales_platform.sort_values(by='total_sales', ascending=False)
+
+  
+    top_10 = total_sales_platform.head(10)
 
 
-if st.button('Mostrar gráfico de duración'):
-
-    # Agrupar por plataforma y calcular años de actividad
-    platform_active = df.groupby('platform')['year_of_release'].agg(['min', 'max'])
-    platform_active['duración'] = platform_active['max'] - platform_active['min']
-    platform_active = platform_active.reset_index().sort_values(by='duración', ascending=True)
-
-    
     fig = px.bar(
-        platform_active,
-        x='duración',
-        y='platform',
-        orientation='h',
-        title='Duración de actividad por plataforma',
-        labels={'duración': 'Años activos', 'platform': 'Plataforma'},
-        color='duración',
-        color_continuous_scale='turbo'
+        top_10,
+        x='platform',
+        y='total_sales',
+        title='Top 10 plataformas por ventas totales',
+        labels={'platform': 'Plataforma', 'total_sales': 'Ventas totales (millones)'},
+        color='total_sales',
+        color_continuous_scale='blues'
     )
 
+   
     st.plotly_chart(fig, use_container_width=True)
+
+
