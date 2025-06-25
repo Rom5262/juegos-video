@@ -88,14 +88,11 @@ import plotly.express as px
 st.set_page_config(page_title="Ventas Wii", layout="wide")
 st.title("🎮 Ventas Totales por Año para Wii")
 
-
-if st.button("Ver gráfico de ventas Wii", key="grafico_wii_final"):
-    # Cargar y preparar los datos
+if st.button("Ver gráfico de ventas Wii", key="grafico_wii_final_v2"):
     df = pd.read_csv("games.csv")
     df.columns = [col.lower() for col in df.columns]
     df['platform'] = df['platform'].str.lower()
 
-    
     df['total_sales'] = (
         df['na_sales'] +
         df['eu_sales'] +
@@ -103,27 +100,31 @@ if st.button("Ver gráfico de ventas Wii", key="grafico_wii_final"):
         df['other_sales']
     )
 
-   
     wii = df[df['platform'] == 'wii'].copy()
-    wii['year_of_release'] = wii['year_of_release'].astype(int)
-    wii_sales = wii.groupby('year_of_release')['total_sales'].sum().reset_index()
+wii = wii.dropna(subset=['year_of_release'])  
+wii['year_of_release'] = wii['year_of_release'].astype(int)
 
-   
-    fig = px.line(
-        wii_sales,
-        x='year_of_release',
-        y='total_sales',
-        title='Ventas Totales por Año para Wii',
-        labels={'year_of_release': 'Año', 'total_sales': 'Ventas Totales (millones)'},
-        markers=True,
-        color_discrete_sequence=['royalblue']
-    )
+    st.write("🔎 Vista previa de datos agregados:", wii_sales)
 
-    fig.update_layout(
-        xaxis_title='Año',
-        yaxis_title='Ventas Totales',
-        xaxis_range=[2005, 2016],
-        template='simple_white'
-    )
+    if wii_sales.empty:
+        st.warning("⚠️ El DataFrame está vacío. No hay datos para graficar.")
+    else:
+        fig = px.line(
+            wii_sales,
+            x='year_of_release',
+            y='total_sales',
+            title='Ventas Totales por Año para Wii',
+            labels={'year_of_release': 'Año', 'total_sales': 'Ventas Totales (millones)'},
+            markers=True,
+            color_discrete_sequence=['royalblue']
+        )
 
-    st.plotly_chart(fig, use_container_width=True)
+        fig.update_layout(
+            xaxis_title='Año',
+            yaxis_title='Ventas Totales',
+            xaxis_range=[2005, 2016],
+            template='simple_white'
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+        
