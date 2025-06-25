@@ -44,11 +44,11 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Configurar la página
+
 st.set_page_config(layout="wide")
 st.title("🎮 Análisis de la industria de los videojuegos")
 
-# Cargar y preparar el DataFrame
+
 df = pd.read_csv("games.csv")
 df.columns = [col.lower() for col in df.columns]
 
@@ -80,4 +80,36 @@ with st.expander("🔹 Plataformas activas por año"):
 
         st.plotly_chart(fig, use_container_width=True)
 
-        
+
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+df = pd.read_csv("games.csv")
+df.columns = [col.lower() for col in df.columns]
+with st.expander("🔹 Ventas Totales de Wii por Año"):
+    if st.button("Ver gráfico de ventas Wii"):
+        wii = df[df['platform'] == 'Wii']
+        wii_sales = wii.groupby('year_of_release').agg(total_sales=('total_sales', 'sum')).reset_index()
+
+        fig = px.line(
+            wii_sales,
+            x='year_of_release',
+            y='total_sales',
+            markers=True,
+            title='Ventas Totales de Wii por Año',
+            labels={
+                'year_of_release': 'Año de lanzamiento',
+                'total_sales': 'Ventas totales (millones)'
+            },
+            color_discrete_sequence=['darkblue']
+        )
+
+        fig.update_layout(
+            xaxis=dict(dtick=1, range=[2005, 2016]),
+            yaxis_title='Ventas Totales',
+            xaxis_title='Año',
+        )
+
+        st.plotly_chart(fig, use_container_width=True)    
