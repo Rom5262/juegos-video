@@ -224,3 +224,5 @@ ax.grid(axis='y', linestyle='--', alpha=0.5)
 plt.xticks(rotation=45)
 
 st.pyplot(fig)
+
+
