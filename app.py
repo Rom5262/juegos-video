@@ -106,11 +106,12 @@ if st.button("Ver gráfico de ventas Wii", key="grafico_wii_final_v3"):
 
     wii_sales = wii.groupby('year_of_release')['total_sales'].sum().reset_index()
 
-    st.write("🔎 Vista previa de datos agregados:", wii_sales)
-
+    # Verifica si hay datos antes de graficar
     if wii_sales.empty:
         st.warning("⚠️ El DataFrame está vacío. No hay datos para graficar.")
     else:
+        st.write("🔎 Vista previa de datos agregados:", wii_sales)
+
         fig = px.line(
             wii_sales,
             x='year_of_release',
@@ -129,4 +130,58 @@ if st.button("Ver gráfico de ventas Wii", key="grafico_wii_final_v3"):
         )
 
         st.plotly_chart(fig, use_container_width=True)
-        
+
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+
+st.set_page_config(page_title="Visualización de Ventas", layout="wide")
+st.title("🎮 Análisis de Ventas de Videojuegos")
+
+# =======================
+# 📦 
+# =======================
+df = pd.read_csv("games.csv")
+df.columns = [col.lower() for col in df.columns]
+df['platform'] = df['platform'].str.lower()
+
+df['total_sales'] = (
+    df['na_sales'] +
+    df['eu_sales'] +
+    df['jp_sales'] +
+    df['other_sales']
+)
+
+df = df.dropna(subset=['year_of_release'])
+df['year_of_release'] = df['year_of_release'].astype(int)
+
+# ===============================
+# 🧪 Comparador de plataformas
+# ===============================
+st.markdown("---")
+st.markdown("## 🧠 Comparador de Ventas por Plataforma")
+
+plataformas = sorted(df['platform'].unique())
+seleccion = st.selectbox("Selecciona una plataforma:", plataformas, key="selector_plataforma")
+
+df_filtrado = df[df['platform'] == seleccion]
+
+if df_filtrado.empty:
+    st.warning(f"No hay datos para la plataforma '{seleccion}'.")
+else:
+    ventas = df_filtrado.groupby('year_of_release')['total_sales'].sum().reset_index()
+
+    fig = px.line(
+        ventas,
+        x='year_of_release',
+        y='total_sales',
+        title=f"Ventas Totales por Año - {seleccion.upper()}",
+        labels={'year_of_release': 'Año', 'total_sales': 'Ventas Totales (millones)'},
+        markers=True,
+        color_discrete_sequence=['indigo']
+    )
+    fig.update_layout(template="simple_white")
+    st.plotly_chart(fig, use_container_width=True)
+    
