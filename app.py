@@ -113,3 +113,48 @@ with st.expander("🔹 Ventas Totales de Wii por Año"):
         )
 
         st.plotly_chart(fig, use_container_width=True)    
+
+
+
+with st.expander("🔹 Ventas Totales de Wii por Año"):
+    if st.button("Ver gráfico de ventas Wii"):
+        df = pd.read_csv("games.csv")
+        df.columns = [col.lower() for col in df.columns]
+
+        # Crear 'total_sales'
+        df['total_sales'] = (
+            df['na_sales'].fillna(0) +
+            df['eu_sales'].fillna(0) +
+            df['jp_sales'].fillna(0) +
+            df['other_sales'].fillna(0)
+        )
+
+        # Filtrar y agrupar datos
+        wii = df[df['platform'] == 'Wii']
+        wii_sales = (
+            wii.groupby('year_of_release')
+            .agg(total_sales=('total_sales', 'sum'))
+            .reset_index()
+        )
+
+        # Crear el gráfico
+        fig = px.line(
+            wii_sales,
+            x='year_of_release',
+            y='total_sales',
+            markers=True,
+            title='Ventas Totales de Wii por Año',
+            labels={
+                'year_of_release': 'Año de lanzamiento',
+                'total_sales': 'Ventas totales (millones)'
+            },
+            color_discrete_sequence=['darkblue']
+        )
+        fig.update_layout(
+            xaxis=dict(dtick=1, range=[2005, 2016]),
+            yaxis_title='Ventas Totales',
+            xaxis_title='Año'
+        )
+        st.plotly_chart(fig, use_container_width=True)
+        
+
