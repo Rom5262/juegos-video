@@ -86,52 +86,44 @@ import pandas as pd
 import plotly.express as px
 
 st.set_page_config(page_title="Ventas Wii", layout="wide")
-st.title("🎮 Ventas totales por año para la plataforma Wii")
+st.title("🎮 Ventas Totales por Año para Wii")
 
-if st.button("Ver gráfico de ventas Wii", key="btn_ventas_wii_grafico3"):
+
+if st.button("Ver gráfico de ventas Wii", key="grafico_wii_final"):
+    # Cargar y preparar los datos
     df = pd.read_csv("games.csv")
     df.columns = [col.lower() for col in df.columns]
+    df['platform'] = df['platform'].str.lower()
 
-    required_cols = {'platform', 'year_of_release', 'na_sales', 'eu_sales', 'jp_sales', 'other_sales'}
-    if required_cols.issubset(df.columns):
+    
+    df['total_sales'] = (
+        df['na_sales'] +
+        df['eu_sales'] +
+        df['jp_sales'] +
+        df['other_sales']
+    )
 
-        # Calcular ventas totales antes de filtrar
-        df['total_sales'] = (
-            df['na_sales'] +
-            df['eu_sales'] +
-            df['jp_sales'] +
-            df['other_sales']
-        )
+   
+    wii = df[df['platform'] == 'wii'].copy()
+    wii['year_of_release'] = wii['year_of_release'].astype(int)
+    wii_sales = wii.groupby('year_of_release')['total_sales'].sum().reset_index()
 
-        # Filtrar solo Wii y limpiar años
-        wii = df[df['platform'] == 'wii'].dropna(subset=['year_of_release'])
-        wii['year_of_release'] = wii['year_of_release'].astype(int)
+   
+    fig = px.line(
+        wii_sales,
+        x='year_of_release',
+        y='total_sales',
+        title='Ventas Totales por Año para Wii',
+        labels={'year_of_release': 'Año', 'total_sales': 'Ventas Totales (millones)'},
+        markers=True,
+        color_discrete_sequence=['royalblue']
+    )
 
-        # Agrupar por año y sumar ventas
-        wii_sales = wii.groupby('year_of_release')['total_sales'].sum().reset_index()
+    fig.update_layout(
+        xaxis_title='Año',
+        yaxis_title='Ventas Totales',
+        xaxis_range=[2005, 2016],
+        template='simple_white'
+    )
 
-        # Crear gráfico interactivo
-        fig = px.line(
-            wii_sales,
-            x='year_of_release',
-            y='total_sales',
-            markers=True,
-            labels={
-                'year_of_release': 'Año',
-                'total_sales': 'Ventas Totales (millones)'
-            },
-            title='Ventas Totales de Wii por Año',
-            color_discrete_sequence=['royalblue']
-        )
-
-        fig.update_layout(
-            xaxis_title='Año',
-            yaxis_title='Ventas Totales',
-            xaxis_range=[2005, 2016],
-            template='simple_white'
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-    else:
-        st.warning("El archivo no contiene todas las columnas necesarias.")
-        
+    st.plotly_chart(fig, use_container_width=True)
