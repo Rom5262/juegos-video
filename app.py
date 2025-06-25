@@ -88,7 +88,7 @@ import plotly.express as px
 st.set_page_config(page_title="Ventas Wii", layout="wide")
 st.title("🎮 Ventas Totales por Año para Wii")
 
-if st.button("Ver gráfico de ventas Wii", key="grafico_wii_final_v2"):
+if st.button("Ver gráfico de ventas Wii", key="grafico_wii_final_v3"):
     df = pd.read_csv("games.csv")
     df.columns = [col.lower() for col in df.columns]
     df['platform'] = df['platform'].str.lower()
@@ -101,8 +101,10 @@ if st.button("Ver gráfico de ventas Wii", key="grafico_wii_final_v2"):
     )
 
     wii = df[df['platform'] == 'wii'].copy()
-wii = wii.dropna(subset=['year_of_release'])  
-wii['year_of_release'] = wii['year_of_release'].astype(int)
+    wii = wii.dropna(subset=['year_of_release'])
+    wii['year_of_release'] = wii['year_of_release'].astype(int)
+
+    wii_sales = wii.groupby('year_of_release')['total_sales'].sum().reset_index()
 
     st.write("🔎 Vista previa de datos agregados:", wii_sales)
 
