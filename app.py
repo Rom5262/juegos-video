@@ -184,4 +184,43 @@ else:
     )
     fig.update_layout(template="simple_white")
     st.plotly_chart(fig, use_container_width=True)
-    
+
+
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+
+st.set_page_config(page_title="Top Plataformas", layout="wide")
+st.title("🎮 Ventas Totales por Plataforma (Top 10)")
+
+
+df = pd.read_csv("games.csv")
+df.columns = [col.lower() for col in df.columns]
+df['platform'] = df['platform'].str.lower()
+
+df['total_sales'] = (
+    df['na_sales'] +
+    df['eu_sales'] +
+    df['jp_sales'] +
+    df['other_sales']
+)
+
+
+total_sales_platform = df.groupby('platform')['total_sales'].sum().reset_index()
+top_platforms = total_sales_platform.sort_values(by='total_sales', ascending=False).head(10)['platform'].tolist()
+
+df_top = df[df['platform'].isin(top_platforms)]
+sales_by_platform = df_top.groupby('platform')['total_sales'].sum().sort_values(ascending=False)
+
+
+fig, ax = plt.subplots(figsize=(10, 6))
+sales_by_platform.plot(kind='bar', ax=ax, color='skyblue')
+
+ax.set_title('Ventas Totales por Plataforma (Top 10)', fontsize=16)
+ax.set_xlabel('Plataforma', fontsize=12)
+ax.set_ylabel('Ventas Totales (millones)', fontsize=12)
+ax.grid(axis='y', linestyle='--', alpha=0.5)
+plt.xticks(rotation=45)
+
+st.pyplot(fig)
