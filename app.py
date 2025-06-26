@@ -226,3 +226,71 @@ plt.xticks(rotation=45)
 st.pyplot(fig)
 
 
+import streamlit as st
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+st.set_page_config(page_title="Ventas por Plataforma", layout="wide")
+st.title("🎮 Comparación de Ventas por Plataforma")
+
+
+uploaded_file = st.file_uploader("Sube tu archivo games.csv", type="csv")
+
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+    df.columns = [col.lower() for col in df.columns]
+    df['platform'] = df['platform'].str.lower()
+
+    required_cols = {'na_sales', 'eu_sales', 'jp_sales', 'other_sales', 'platform'}
+    if not required_cols.issubset(df.columns):
+        st.error(f"El archivo debe tener las columnas: {required_cols}")
+        st.stop()
+
+    
+    df['total_sales'] = df['na_sales'] + df['eu_sales'] + df['jp_sales'] + df['other_sales']
+
+    
+    plataformas = sorted(df['platform'].unique())
+    plataformas_seleccionadas = st.multiselect("Selecciona plataformas:", plataformas, default=plataformas[:5])
+
+    if not plataformas_seleccionadas:
+        st.warning("Selecciona al menos una plataforma.")
+        st.stop()
+
+    
+    df_filtrado = df[df['platform'].isin(plataformas_seleccionadas)]
+
+    
+    max_ventas = float(df_filtrado['total_sales'].max())
+    limite_ventas = st.slider("Mostrar juegos con ventas hasta:", 0.0, max_ventas, 5.0, step=0.1)
+
+    df_filtrado = df_filtrado[df_filtrado['total_sales'] <= limite_ventas]
+
+    if df_filtrado.empty:
+        st.warning("No hay datos que coincidan con los filtros seleccionados.")
+        st.stop()
+
+    
+    tipo_grafico = st.radio("Tipo de gráfico:", ["Histograma", "Boxplot", "KDE", "Violinplot"])
+
+    
+    plt.figure(figsize=(10, 6))
+    if tipo_grafico == "Histograma":
+        sns.histplot(data=df_filtrado, x="total_sales", hue="platform", multiple="stack", binwidth=0.5)
+    elif tipo_grafico == "Boxplot":
+        sns.boxplot(data=df_filtrado, x="platform", y="total_sales")
+    elif tipo_grafico == "KDE":
+        sns.kdeplot(data=df_filtrado, x="total_sales", hue="platform", fill=True)
+    elif tipo_grafico == "Violinplot":
+        sns.violinplot(data=df_filtrado, x="platform", y="total_sales", inner="quartile")
+
+    plt.title(f"Ventas Totales por Plataforma ({tipo_grafico})")
+    plt.xlabel("Plataforma" if tipo_grafico != "Histograma" else "Ventas Totales")
+    plt.ylabel("Ventas Totales")
+    plt.grid(axis='y', linestyle='--', alpha=0.3)
+
+    st.pyplot(plt.gcf())
+else:
+    st.info("Por favor, sube un archivo CSV para comenzar.")
+    
