@@ -14,8 +14,15 @@ from charts import (
     comparar_ventas_por_plataforma,
     comparador_estadistico_ventas,
     distribucion_ventas_por_plataforma,
-    comparar_ventas_por_juego_y_plataforma, # <--- Esta línea ya estaba, solo para confirmar
-    distribucion_ventas_por_genero_top_plataformas # <--- ¡Nueva importación!
+    comparar_ventas_por_juego_y_plataforma,
+    distribucion_ventas_por_genero_top_plataformas, # Nueva importación para gráficos de distribución por género
+    analisis_ventas_por_region_y_genero, # Nueva función unificada de ventas por región y género
+    tendencia_ventas_top_na_plataformas, # Tendencia NA por plataforma
+    tendencia_ventas_top_eu_plataformas, # Tendencia EU por plataforma
+    tendencia_ventas_top_jp_plataformas, # Tendencia JP por plataforma
+    tendencia_ventas_top_na_generos, # Tendencia NA por género
+    tendencia_ventas_top_eu_generos, # Tendencia EU por género
+    tendencia_ventas_top_jp_generos # Tendencia JP por género
 )
 
 # Configuración de la página de Streamlit
@@ -80,7 +87,7 @@ else:
             "Plataformas activas por año",
             "Top plataformas por ventas",
             "Distribución de ventas por plataforma para comparación",
-            "Distribución de ventas por género en Top 10 Plataformas" # <--- ¡Nueva opción en el selector!
+            "Distribución de ventas por género en Top 10 Plataformas" # Nueva opción
         ])
         if opcion == "Duración de plataformas":
             duracion_plataformas(df_filtered)
@@ -90,13 +97,20 @@ else:
             top_plataformas(df_filtered)
         elif opcion == "Distribución de ventas por plataforma para comparación":
             distribucion_ventas_por_plataforma(df_filtered)
-        elif opcion == "Distribución de ventas por género en Top 10 Plataformas": # <--- ¡Nueva llamada a la función!
+        elif opcion == "Distribución de ventas por género en Top 10 Plataformas": # Nueva llamada
             distribucion_ventas_por_genero_top_plataformas(df_filtered)
     else: # Módulo de Ventas
         opcion = st.sidebar.selectbox("Análisis de ventas", [
             "Ventas por plataforma",
             "Comparador estadístico",
-            "Comparar ventas por videojuego y plataforma" # Esta opción ya estaba
+            "Comparar ventas por videojuego y plataforma",
+            "Análisis de Ventas Regionales y por Género", # Nueva opción unificada
+            "Tendencia de Ventas Top 5 NA Plataformas", # Nueva opción
+            "Tendencia de Ventas Top 5 EU Plataformas", # Nueva opción
+            "Tendencia de Ventas Top 5 JP Plataformas", # Nueva opción
+            "Tendencia de Ventas Top 5 NA Géneros", # Nueva opción
+            "Tendencia de Ventas Top 5 EU Géneros", # Nueva opción
+            "Tendencia de Ventas Top 5 JP Géneros" # Nueva opción
         ])
         if opcion == "Ventas por plataforma":
             comparar_ventas_por_plataforma(df_filtered)
@@ -104,4 +118,17 @@ else:
             comparador_estadistico_ventas(df_filtered)
         elif opcion == "Comparar ventas por videojuego y plataforma":
             comparar_ventas_por_juego_y_plataforma(df_filtered)
-            
+        elif opcion == "Análisis de Ventas Regionales y por Género": # Llamada a la nueva función unificada
+            analisis_ventas_por_region_y_genero(df_filtered)
+        elif opcion == "Tendencia de Ventas Top 5 NA Plataformas": # Llamada
+            tendencia_ventas_top_na_plataformas(df_filtered)
+        elif opcion == "Tendencia de Ventas Top 5 EU Plataformas": # Llamada
+            tendencia_ventas_top_eu_plataformas(df_filtered)
+        elif opcion == "Tendencia de Ventas Top 5 JP Plataformas": # Llamada
+            tendencia_ventas_top_jp_plataformas(df_filtered)
+        elif opcion == "Tendencia de Ventas Top 5 NA Géneros": # Llamada
+            tendencia_ventas_top_na_generos(df_filtered)
+        elif opcion == "Tendencia de Ventas Top 5 EU Géneros": # Llamada
+            tendencia_ventas_top_eu_generos(df_filtered)
+        elif opcion == "Tendencia de Ventas Top 5 JP Géneros": # Llamada
+            tendencia_ventas_top_jp_generos(df_filtered)
