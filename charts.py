@@ -216,3 +216,79 @@ def comparar_ventas_por_juego_y_plataforma(df_filtered):
     ax.set_ylabel("Ventas Totales (millones)")
     ax.set_ylim(bottom=0) # Asegura que el eje Y comience en 0
     st.pyplot(fig)
+
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# ... (Tus funciones existentes de gráficos como duracion_plataformas,
+#      plataformas_activas_por_anio, top_plataformas,
+#      comparar_ventas_por_plataforma, comparador_estadistico_ventas,
+#      distribucion_ventas_por_plataforma, y
+#      comparar_ventas_por_juego_y_plataforma deberían ir aquí arriba) ...
+
+# Nueva función para la distribución de ventas por género en las Top 10 plataformas
+# Ahora con selección de tipo de gráfico (Boxplot, Violin Plot, Histograma)
+def distribucion_ventas_por_genero_top_plataformas(df_filtered):
+    st.subheader("Distribución de Ventas por Género en Top 10 Plataformas")
+
+    # Selector para el tipo de gráfico
+    tipo_grafico = st.selectbox(
+        "Selecciona el tipo de gráfico",
+        ("Boxplot", "Violin Plot", "Histograma"),
+        key="genre_sales_chart_type" # 'key' es buena práctica para evitar conflictos en Streamlit
+    )
+
+    # Calcular las 10 plataformas con mayores ventas totales dentro del df_filtered actual
+    top_10_platforms_series = df_filtered.groupby('platform')['total_sales'].sum().nlargest(10).index
+    
+    # Filtrar el DataFrame para incluir solo los juegos de esas Top 10 plataformas
+    df_top_10 = df_filtered[df_filtered['platform'].isin(top_10_platforms_series)]
+
+    # Verificamos si hay datos después de filtrar para evitar errores
+    if df_top_10.empty:
+        st.warning("No hay datos disponibles para las Top 10 plataformas en el rango de años seleccionado.")
+        return
+
+    # Crear el gráfico basado en la selección del usuario
+    fig, ax = plt.subplots(figsize=(14, 7)) # Tamaño de figura ajustado para mejor legibilidad
+
+    if tipo_grafico == "Boxplot":
+        sns.boxplot(y='total_sales', x='genre', data=df_top_10, palette='viridis', ax=ax)
+        ax.set_title('Distribución de Ventas Totales por Género (Boxplot)', fontsize=16)
+        ax.set_xlabel('Género', fontsize=12)
+        ax.set_ylabel('Ventas Totales (millones)', fontsize=12)
+        ax.set_ylim(bottom=0) # Asegura que el eje Y comience en 0 para ventas, sin límite superior fijo
+        
+    elif tipo_grafico == "Violin Plot":
+        sns.violinplot(y='total_sales', x='genre', data=df_top_10, palette='plasma', ax=ax)
+        ax.set_title('Distribución de Ventas Totales por Género (Violin Plot)', fontsize=16)
+        ax.set_xlabel('Género', fontsize=12)
+        ax.set_ylabel('Ventas Totales (millones)', fontsize=12)
+        ax.set_ylim(bottom=0) # Asegura que el eje Y comience en 0 para ventas, sin límite superior fijo
+
+    elif tipo_grafico == "Histograma":
+        ax.set_title('Histograma de Ventas Totales por Género', fontsize=16)
+        ax.set_xlabel('Ventas Totales (millones)', fontsize=12)
+        ax.set_ylabel('Frecuencia', fontsize=12)
+        
+        # Obtiene los géneros únicos presentes en los datos filtrados para iterar
+        genres_in_data = df_top_10['genre'].unique()
+        # Itera sobre cada género para crear histogramas superpuestos
+        for genre in sorted(genres_in_data): # Ordena los géneros para una leyenda consistente
+            data_to_plot = df_top_10[df_top_10['genre'] == genre]['total_sales']
+            # Solo traza si hay datos para el género en el filtro actual
+            if not data_to_plot.empty:
+                sns.histplot(data_to_plot, kde=True, ax=ax, label=genre, alpha=0.5, bins=30)
+        # Mueve la leyenda fuera del área del gráfico para no obstruir los datos
+        ax.legend(title="Géneros", bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.set_ylim(bottom=0) # Asegura que el eje Y (frecuencia) comience en 0
+
+    # Ajustes comunes para todos los tipos de gráficos en esta función
+    plt.xticks(rotation=45, ha='right') # Rota las etiquetas del eje X para mejor visualización
+    plt.tight_layout() # Ajusta automáticamente los parámetros de la figura para que no haya superposiciones
+    
+    st.pyplot(fig) # Muestra el gráfico en la aplicación Streamlit
+    

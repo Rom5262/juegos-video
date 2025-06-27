@@ -13,7 +13,9 @@ from charts import (
     top_plataformas,
     comparar_ventas_por_plataforma,
     comparador_estadistico_ventas,
-    distribucion_ventas_por_plataforma
+    distribucion_ventas_por_plataforma,
+    comparar_ventas_por_juego_y_plataforma, # <--- Esta línea ya estaba, solo para confirmar
+    distribucion_ventas_por_genero_top_plataformas # <--- ¡Nueva importación!
 )
 
 # Configuración de la página de Streamlit
@@ -77,7 +79,8 @@ else:
             "Duración de plataformas",
             "Plataformas activas por año",
             "Top plataformas por ventas",
-            "Distribución de ventas por plataforma para comparación"
+            "Distribución de ventas por plataforma para comparación",
+            "Distribución de ventas por género en Top 10 Plataformas" # <--- ¡Nueva opción en el selector!
         ])
         if opcion == "Duración de plataformas":
             duracion_plataformas(df_filtered)
@@ -87,13 +90,18 @@ else:
             top_plataformas(df_filtered)
         elif opcion == "Distribución de ventas por plataforma para comparación":
             distribucion_ventas_por_plataforma(df_filtered)
+        elif opcion == "Distribución de ventas por género en Top 10 Plataformas": # <--- ¡Nueva llamada a la función!
+            distribucion_ventas_por_genero_top_plataformas(df_filtered)
     else: # Módulo de Ventas
         opcion = st.sidebar.selectbox("Análisis de ventas", [
             "Ventas por plataforma",
-            "Comparador estadístico"
+            "Comparador estadístico",
+            "Comparar ventas por videojuego y plataforma" # Esta opción ya estaba
         ])
         if opcion == "Ventas por plataforma":
             comparar_ventas_por_plataforma(df_filtered)
-        else:
+        elif opcion == "Comparador estadístico":
             comparador_estadistico_ventas(df_filtered)
+        elif opcion == "Comparar ventas por videojuego y plataforma":
+            comparar_ventas_por_juego_y_plataforma(df_filtered)
             
