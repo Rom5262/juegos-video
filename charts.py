@@ -18,7 +18,8 @@ def duracion_plataformas(df_filtered):
 
     # Crea el gráfico de barras usando Matplotlib y Seaborn
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(data=duracion, x=duracion.index, y="duración", palette="viridis", ax=ax)
+    # FIX: Se añade hue=duracion.index y legend=False para evitar FutureWarning
+    sns.barplot(data=duracion, x=duracion.index, y="duración", palette="viridis", ax=ax, hue=duracion.index, legend=False)
     ax.set_title("Top plataformas por años activos")
     ax.set_ylabel("Años activos")
     ax.set_xlabel("Plataforma")
@@ -47,7 +48,8 @@ def top_plataformas(df_filtered):
 
     # Crea el gráfico de barras horizontales
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(x=ventas.values, y=ventas.index, palette="coolwarm", ax=ax)
+    # FIX: Se añade hue=ventas.index y legend=False para evitar FutureWarning
+    sns.barplot(x=ventas.values, y=ventas.index, palette="coolwarm", ax=ax, hue=ventas.index, legend=False)
     ax.set_title("Plataformas con mayores ventas")
     ax.set_xlabel("Ventas (millones)")
     ax.set_ylabel("Plataforma")
@@ -148,7 +150,8 @@ def distribucion_ventas_por_plataforma(df_filtered):
 
     if tipo_grafico == "Violin Plot":
         # Crea un violin plot de las ventas totales para las plataformas seleccionadas
-        sns.violinplot(x='platform', y='total_sales', data=df_plataforma_filtrada, palette='viridis', ax=ax)
+        # FIX: Se añade hue='platform' y legend=False para evitar FutureWarning
+        sns.violinplot(x='platform', y='total_sales', data=df_plataforma_filtrada, palette='viridis', ax=ax, hue='platform', legend=False)
         ax.set_title("Distribución de Ventas Totales por Plataforma (Violin Plot)")
         ax.set_xlabel("Plataforma")
         ax.set_ylabel("Ventas Totales (millones)")
@@ -156,7 +159,8 @@ def distribucion_ventas_por_plataforma(df_filtered):
 
     elif tipo_grafico == "Box Plot":
         # Crea un box plot de las ventas totales para las plataformas seleccionadas
-        sns.boxplot(x='platform', y='total_sales', data=df_plataforma_filtrada, palette='plasma', ax=ax)
+        # FIX: Se añade hue='platform' y legend=False para evitar FutureWarning
+        sns.boxplot(x='platform', y='total_sales', data=df_plataforma_filtrada, palette='plasma', ax=ax, hue='platform', legend=False)
         ax.set_title("Distribución de Ventas Totales por Plataforma (Box Plot)")
         ax.set_xlabel("Plataforma")
         ax.set_ylabel("Ventas Totales (millones)")
@@ -211,7 +215,8 @@ def comparar_ventas_por_juego_y_plataforma(df_filtered):
 
     # Crear el gráfico de barras
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(x='platform', y='total_sales', data=ventas_por_plataforma_juego, palette='viridis', ax=ax)
+    # FIX: Se añade hue='platform' y legend=False para evitar FutureWarning
+    sns.barplot(x='platform', y='total_sales', data=ventas_por_plataforma_juego, palette='viridis', ax=ax, hue='platform', legend=False)
     ax.set_title(f"Ventas Totales de '{juego_seleccionado}' por Plataforma")
     ax.set_xlabel("Plataforma")
     ax.set_ylabel("Ventas Totales (millones)")
@@ -245,14 +250,16 @@ def distribucion_ventas_por_genero_top_plataformas(df_filtered):
     fig, ax = plt.subplots(figsize=(14, 7))
 
     if tipo_grafico == "Boxplot":
-        sns.boxplot(y='total_sales', x='genre', data=df_top_10, palette='viridis', ax=ax)
+        # FIX: Se añade hue='genre' y legend=False para evitar FutureWarning
+        sns.boxplot(y='total_sales', x='genre', data=df_top_10, palette='viridis', ax=ax, hue='genre', legend=False)
         ax.set_title('Distribución de Ventas Totales por Género (Boxplot)', fontsize=16)
         ax.set_xlabel('Género', fontsize=12)
         ax.set_ylabel('Ventas Totales (millones)', fontsize=12)
         ax.set_ylim(bottom=0) # Asegura que el eje Y comience en 0 para ventas
         
     elif tipo_grafico == "Violin Plot":
-        sns.violinplot(y='total_sales', x='genre', data=df_top_10, palette='plasma', ax=ax)
+        # FIX: Se añade hue='genre' y legend=False para evitar FutureWarning
+        sns.violinplot(y='total_sales', x='genre', data=df_top_10, palette='plasma', ax=ax, hue='genre', legend=False)
         ax.set_title('Distribución de Ventas Totales por Género (Violin Plot)', fontsize=16)
         ax.set_xlabel('Género', fontsize=12)
         ax.set_ylabel('Ventas Totales (millones)', fontsize=12)
@@ -325,7 +332,8 @@ def analisis_ventas_por_region_y_genero(df_filtered):
         top_genres = genre_sales.head(top_n_genres)
 
         fig, ax = plt.subplots(figsize=(12, 7))
-        sns.barplot(x=top_genres.values, y=top_genres.index, palette='magma', ax=ax)
+        # FIX: Se añade hue=top_genres.index y legend=False para evitar FutureWarning
+        sns.barplot(x=top_genres.values, y=top_genres.index, palette='magma', ax=ax, hue=top_genres.index, legend=False)
         ax.set_title(f'Top {top_n_genres} Géneros por {selected_region_display}', fontsize=16)
         ax.set_xlabel(f'Ventas ({selected_region_display.replace("Ventas ", "")}) en Millones', fontsize=12)
         ax.set_ylabel('Género', fontsize=12)
@@ -664,4 +672,3 @@ def tendencia_ventas_top_jp_generos(df_filtered):
     plt.tight_layout()
     
     st.pyplot(fig)
-    
