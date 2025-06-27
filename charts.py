@@ -175,4 +175,44 @@ def distribucion_ventas_por_plataforma(df_filtered):
         ax.set_ylim(bottom=0)
 
     st.pyplot(fig)
+
+
+# Nueva función para comparar ventas de un mismo videojuego en diferentes plataformas
+def comparar_ventas_por_juego_y_plataforma(df_filtered):
+    st.subheader("Comparación de Ventas por Videojuego y Plataforma")
+
+    # Obtener la lista de videojuegos únicos con al menos 2 plataformas disponibles en el df filtrado
+    # Agrupar por nombre de juego y contar las plataformas únicas
+    juegos_multiplataforma = df_filtered.groupby('name')['platform'].nunique()
+    # Filtrar solo los juegos que aparecen en más de una plataforma
+    juegos_con_comparacion = juegos_multiplataforma[juegos_multiplataforma > 1].index.tolist()
+    juegos_con_comparacion.sort() # Ordenar alfabéticamente
+
+    if not juegos_con_comparacion:
+        st.warning("No hay videojuegos con ventas en múltiples plataformas en el rango de años seleccionado para comparar.")
+        return
+
+    # Selector para elegir un videojuego
+    juego_seleccionado = st.selectbox(
+        "Selecciona un videojuego para comparar sus ventas entre plataformas",
+        juegos_con_comparacion
+    )
+
+    # Filtrar el DataFrame para el juego seleccionado
+    df_juego_filtrado = df_filtered[df_filtered['name'] == juego_seleccionado]
+
+    # Agrupar las ventas totales por plataforma para el juego seleccionado
+    ventas_por_plataforma_juego = df_juego_filtrado.groupby('platform')['total_sales'].sum().reset_index()
     
+    if ventas_por_plataforma_juego.empty:
+        st.warning(f"No hay datos de ventas para '{juego_seleccionado}' en el rango de años actual.")
+        return
+
+    # Crear el gráfico de barras
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(x='platform', y='total_sales', data=ventas_por_plataforma_juego, palette='viridis', ax=ax)
+    ax.set_title(f"Ventas Totales de '{juego_seleccionado}' por Plataforma")
+    ax.set_xlabel("Plataforma")
+    ax.set_ylabel("Ventas Totales (millones)")
+    ax.set_ylim(bottom=0) # Asegura que el eje Y comience en 0
+    st.pyplot(fig)
