@@ -2,18 +2,18 @@
 import streamlit as st
 import pandas as pd
 
-# Importar funciones de los módulos
-from ventas import comparar_ventas_por_plataforma, comparador_estadistico_ventas
-from generales import duracion_plataformas, plataformas_activas_por_anio, top_plataformas
 
-# Cargar dataset
+from graficas.generales import duracion_plataformas, plataformas_activas_por_anio, top_plataformas
+from graficas.ventas import comparar_ventas_por_plataforma, comparador_estadistico_ventas
+
+
 @st.cache_data
 def cargar_datos():
     return pd.read_csv("datos.csv")  # Reemplaza por la ruta de tu archivo real
 
 df = cargar_datos()
 
-# Interfaz principal
+
 def main():
     st.set_page_config(page_title="Dashboard de Videojuegos", layout="wide")
     st.title("🎮 Dashboard de Videojuegos")
