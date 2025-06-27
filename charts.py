@@ -657,6 +657,7 @@ def tendencia_ventas_top_jp_generos(df_filtered):
 
     for genre in sales_trend['genre'].unique():
         genre_data = sales_trend[sales_trend['genre'] == genre]
+        # CORRECCIÓN AQUÍ: Cambiado 'platform_data' a 'genre_data'
         ax.plot(genre_data['year_of_release'], 
                 genre_data['jp_sales'], label=genre, marker='o', linewidth=2)
 
