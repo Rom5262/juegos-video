@@ -1,59 +1,47 @@
 
 import streamlit as st
-import plotly.express as px
-import seaborn as sns
-import matplotlib.pyplot as plt
+import pandas as pd
 
-def comparar_ventas_por_plataforma(df):
-    plataformas = sorted(df['platform'].unique())
-    seleccion = st.selectbox("🎮 Selecciona una plataforma:", plataformas)
+# Importar funciones de los módulos
+from ventas import comparar_ventas_por_plataforma, comparador_estadistico_ventas
+from generales import duracion_plataformas, plataformas_activas_por_anio, top_plataformas
 
-    df_filtrado = df[df['platform'] == seleccion]
-    if df_filtrado.empty:
-        st.warning(f"No hay datos para {seleccion}")
-        return
+# Cargar dataset
+@st.cache_data
+def cargar_datos():
+    return pd.read_csv("datos.csv")  # Reemplaza por la ruta de tu archivo real
 
-    ventas = df_filtrado.groupby('year_of_release')['total_sales'].sum().reset_index()
-    fig = px.line(
-        ventas,
-        x='year_of_release',
-        y='total_sales',
-        title=f"Ventas Totales por Año - {seleccion.upper()}",
-        labels={'year_of_release': 'Año', 'total_sales': 'Ventas Totales (millones)'},
-        markers=True,
-        color_discrete_sequence=['indigo']
-    )
-    fig.update_layout(template="simple_white")
-    st.plotly_chart(fig, use_container_width=True)
+df = cargar_datos()
 
-def comparador_estadistico_ventas(df):
-    plataformas = sorted(df['platform'].unique())
-    seleccionadas = st.multiselect("📦 Plataformas a comparar:", plataformas, default=plataformas[:5])
-    if not seleccionadas:
-        st.warning("Selecciona al menos una plataforma.")
-        return
+# Interfaz principal
+def main():
+    st.set_page_config(page_title="Dashboard de Videojuegos", layout="wide")
+    st.title("🎮 Dashboard de Videojuegos")
 
-    df_filtro = df[df['platform'].isin(seleccionadas)]
-    limite = st.slider("Limitar juegos con ventas hasta:", 0.0, float(df_filtro['total_sales'].max()), 5.0, step=0.1)
-    df_filtro = df_filtro[df_filtro['total_sales'] <= limite]
+    modulo = st.sidebar.radio("Selecciona módulo", ["Generales", "Ventas"])
 
-    if df_filtro.empty:
-        st.warning("No hay datos que cumplan los filtros seleccionados.")
-        return
+    if modulo == "Generales":
+        opcion = st.sidebar.selectbox("Análisis general", [
+            "Duración de plataformas",
+            "Plataformas activas por año",
+            "Top plataformas por ventas"
+        ])
+        if opcion == "Duración de plataformas":
+            duracion_plataformas(df)
+        elif opcion == "Plataformas activas por año":
+            plataformas_activas_por_anio(df)
+        else:
+            top_plataformas(df)
 
-    tipo = st.radio("Tipo de gráfico:", ["Histograma", "Boxplot", "KDE", "Violinplot"])
-    plt.figure(figsize=(10, 6))
+    else:
+        opcion = st.sidebar.selectbox("Análisis de ventas", [
+            "Ventas por plataforma",
+            "Comparador estadístico"
+        ])
+        if opcion == "Ventas por plataforma":
+            comparar_ventas_por_plataforma(df)
+        else:
+            comparador_estadistico_ventas(df)
 
-    if tipo == "Histograma":
-        sns.histplot(data=df_filtro, x="total_sales", hue="platform", multiple="stack", binwidth=0.5)
-    elif tipo == "Boxplot":
-        sns.boxplot(data=df_filtro, x="platform", y="total_sales")
-    elif tipo == "KDE":
-        sns.kdeplot(data=df_filtro, x="total_sales", hue="platform", fill=True)
-    elif tipo == "Violinplot":
-        sns.violinplot(data=df_filtro, x="platform", y="total_sales", inner="quartile")
-
-    plt.title(f"Ventas Totales por Plataforma ({tipo})")
-    plt.grid(axis='y', linestyle='--', alpha=0.3)
-    st.pyplot(plt.gcf())
-    
+if __name__ == "__main__":
+    main()
