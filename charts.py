@@ -534,6 +534,14 @@ def tendencia_ventas_top_jp_plataformas(df_filtered):
 def tendencia_ventas_top_na_generos(df_filtered):
     st.subheader("Tendencia de Ventas de los Top 5 Géneros en Norteamérica")
 
+    # --- Mensajes de Depuración ---
+    st.write(f"DEBUG (NA Generos): df_filtered.empty al inicio: {df_filtered.empty}")
+    if not df_filtered.empty:
+        st.write(f"DEBUG (NA Generos): Columnas en df_filtered: {df_filtered.columns.tolist()}")
+        # st.write(f"DEBUG (NA Generos): Primeras filas de df_filtered (head):")
+        # st.write(df_filtered.head())
+    # --- Fin Mensajes de Depuración ---
+
     if df_filtered.empty:
         st.warning("No hay datos disponibles para el rango de años seleccionado.")
         return
@@ -544,6 +552,10 @@ def tendencia_ventas_top_na_generos(df_filtered):
     
     top_na_genres_names = na_main_genres['genre'].tolist()
 
+    # --- Mensajes de Depuración ---
+    st.write(f"DEBUG (NA Generos): Top 5 géneros NA calculados: {top_na_genres_names}")
+    # --- Fin Mensajes de Depuración ---
+
     if not top_na_genres_names:
         st.info("No se encontraron Top 5 géneros con ventas en Norteamérica para el rango de años seleccionado.")
         return
@@ -551,6 +563,13 @@ def tendencia_ventas_top_na_generos(df_filtered):
     # 2. Filtrar el DataFrame para incluir solo los juegos de esos Top 5 géneros
     top_na_genres_data = df_filtered[df_filtered['genre'].isin(top_na_genres_names)]
     sales_trend = top_na_genres_data.groupby(['year_of_release', 'genre'])['na_sales'].sum().reset_index()
+
+    # --- Mensajes de Depuración ---
+    st.write(f"DEBUG (NA Generos): sales_trend.empty después de agrupar: {sales_trend.empty}")
+    # if not sales_trend.empty:
+    #     st.write(f"DEBUG (NA Generos): sales_trend head():")
+    #     st.write(sales_trend.head())
+    # --- Fin Mensajes de Depuración ---
 
     if sales_trend.empty:
         st.info("No hay datos de tendencia para los Top 5 géneros en Norteamérica en el rango de años seleccionado.")
@@ -582,6 +601,14 @@ def tendencia_ventas_top_na_generos(df_filtered):
 def tendencia_ventas_top_eu_generos(df_filtered):
     st.subheader("Tendencia de Ventas de los Top 5 Géneros en Europa")
 
+    # --- Mensajes de Depuración ---
+    st.write(f"DEBUG (EU Generos): df_filtered.empty al inicio: {df_filtered.empty}")
+    if not df_filtered.empty:
+        st.write(f"DEBUG (EU Generos): Columnas en df_filtered: {df_filtered.columns.tolist()}")
+        # st.write(f"DEBUG (EU Generos): Primeras filas de df_filtered (head):")
+        # st.write(df_filtered.head())
+    # --- Fin Mensajes de Depuración ---
+
     if df_filtered.empty:
         st.warning("No hay datos disponibles para el rango de años seleccionado.")
         return
@@ -592,6 +619,10 @@ def tendencia_ventas_top_eu_generos(df_filtered):
     
     top_eu_genres_names = eu_main_genres['genre'].tolist()
 
+    # --- Mensajes de Depuración ---
+    st.write(f"DEBUG (EU Generos): Top 5 géneros EU calculados: {top_eu_genres_names}")
+    # --- Fin Mensajes de Depuración ---
+
     if not top_eu_genres_names:
         st.info("No se encontraron Top 5 géneros con ventas en Europa para el rango de años seleccionado.")
         return
@@ -599,6 +630,13 @@ def tendencia_ventas_top_eu_generos(df_filtered):
     # 2. Filtrar el DataFrame para incluir solo los juegos de esos Top 5 géneros
     top_eu_genres_data = df_filtered[df_filtered['genre'].isin(top_eu_genres_names)]
     sales_trend = top_eu_genres_data.groupby(['year_of_release', 'genre'])['eu_sales'].sum().reset_index()
+
+    # --- Mensajes de Depuración ---
+    st.write(f"DEBUG (EU Generos): sales_trend.empty después de agrupar: {sales_trend.empty}")
+    # if not sales_trend.empty:
+    #     st.write(f"DEBUG (EU Generos): sales_trend head():")
+    #     st.write(sales_trend.head())
+    # --- Fin Mensajes de Depuración ---
 
     if sales_trend.empty:
         st.info("No hay datos de tendencia para los Top 5 géneros en Europa en el rango de años seleccionado.")
@@ -630,6 +668,14 @@ def tendencia_ventas_top_eu_generos(df_filtered):
 def tendencia_ventas_top_jp_generos(df_filtered):
     st.subheader("Tendencia de Ventas de los Top 5 Géneros en Japón")
 
+    # --- Mensajes de Depuración ---
+    st.write(f"DEBUG (JP Generos): df_filtered.empty al inicio: {df_filtered.empty}")
+    if not df_filtered.empty:
+        st.write(f"DEBUG (JP Generos): Columnas en df_filtered: {df_filtered.columns.tolist()}")
+        st.write(f"DEBUG (JP Generos): Primeras filas de df_filtered (head):")
+        st.write(df_filtered.head())
+    # --- Fin Mensajes de Depuración ---
+
     if df_filtered.empty:
         st.warning("No hay datos disponibles para el rango de años seleccionado.")
         return
@@ -640,6 +686,10 @@ def tendencia_ventas_top_jp_generos(df_filtered):
     
     top_jp_genres_names = jp_main_genres['genre'].tolist()
 
+    # --- Mensajes de Depuración ---
+    st.write(f"DEBUG (JP Generos): Top 5 géneros JP calculados: {top_jp_genres_names}")
+    # --- Fin Mensajes de Depuración ---
+
     if not top_jp_genres_names:
         st.info("No se encontraron Top 5 géneros con ventas en Japón para el rango de años seleccionado.")
         return
@@ -647,6 +697,13 @@ def tendencia_ventas_top_jp_generos(df_filtered):
     # 2. Filtrar el DataFrame para incluir solo los juegos de esos Top 5 géneros
     top_jp_genres_data = df_filtered[df_filtered['genre'].isin(top_jp_genres_names)]
     sales_trend = top_jp_genres_data.groupby(['year_of_release', 'genre'])['jp_sales'].sum().reset_index()
+
+    # --- Mensajes de Depuración ---
+    st.write(f"DEBUG (JP Generos): sales_trend.empty después de agrupar: {sales_trend.empty}")
+    if not sales_trend.empty:
+        st.write(f"DEBUG (JP Generos): sales_trend head():")
+        st.write(sales_trend.head())
+    # --- Fin Mensajes de Depuración ---
 
     if sales_trend.empty:
         st.info("No hay datos de tendencia para los Top 5 géneros en Japón en el rango de años seleccionado.")
@@ -657,7 +714,7 @@ def tendencia_ventas_top_jp_generos(df_filtered):
 
     for genre in sales_trend['genre'].unique():
         genre_data = sales_trend[sales_trend['genre'] == genre]
-        # CORRECCIÓN AQUÍ: Cambiado 'platform_data' a 'genre_data'
+        # CORRECCIÓN: Cambiado 'platform_data' a 'genre_data'
         ax.plot(genre_data['year_of_release'], 
                 genre_data['jp_sales'], label=genre, marker='o', linewidth=2)
 
